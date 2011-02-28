@@ -189,6 +189,27 @@ static void omap_serial_fill_default_pads(struct omap_board_data *bdata)
 	}
 }
 
+static void omap_uart_wakeup_enable(struct platform_device *pdev, bool enable)
+{
+	struct omap_uart_port_info *up = pdev->dev.platform_data;
+
+	/* Set or clear wake-enable bit */
+	if (up->wk_en && up->wk_mask) {
+		u32 v = __raw_readl(up->wk_en);
+		if (enable)
+			v |= up->wk_mask;
+		else
+			v &= ~up->wk_mask;
+		__raw_writel(v, up->wk_en);
+	}
+
+	/* Enable or clear io-pad wakeup */
+	if (enable)
+		omap_device_enable_ioring_wakeup(pdev);
+	else
+		omap_device_disable_ioring_wakeup(pdev);
+}
+
 static void omap_uart_idle_init(struct omap_uart_port_info *uart,
 				unsigned short num)
 {
@@ -332,6 +353,7 @@ void __init omap_serial_init_port(struct omap_board_data *bdata)
 
 	pdata->uartclk = OMAP24XX_BASE_BAUD * 16;
 	pdata->flags = UPF_BOOT_AUTOCONF;
+	pdata->enable_wakeup = omap_uart_wakeup_enable;
 	if (bdata->id == omap_uart_con_id)
 		pdata->console_uart = true;
 

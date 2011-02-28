@@ -65,6 +65,7 @@ struct omap_uart_port_info {
 	unsigned int		errata;
 	unsigned int		console_uart;
 
+	void (*enable_wakeup)(struct platform_device *, bool);
 	void __iomem *wk_st;
 	void __iomem *wk_en;
 	u32 wk_mask;
@@ -120,6 +121,7 @@ struct uart_omap_port {
 	char			name[20];
 	unsigned long		port_activity;
 	unsigned int		errata;
+	void (*enable_wakeup)(struct platform_device *, bool);
 };
 
 #endif /* __OMAP_SERIAL_H__ */
