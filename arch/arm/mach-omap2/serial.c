@@ -199,6 +199,28 @@ static void omap_serial_fill_default_pads(struct omap_board_data *bdata)
 	}
 }
 
+/* TBD: Will be removed once we have irq-chaing mechanism */
+static bool omap_uart_chk_wakeup(struct platform_device *pdev)
+{
+	struct omap_uart_port_info *up = pdev->dev.platform_data;
+	struct omap_device *od;
+	u32 wkst = 0;
+	bool ret = false;
+
+	od = to_omap_device(pdev);
+	if (omap_hmwod_pad_get_wakeup_status(od->hwmods[0]))
+		ret = true;
+
+	/* Check for normal UART wakeup (and clear it) */
+	wkst = __raw_readl(up->wk_st) & up->wk_mask;
+	if (wkst) {
+		__raw_writel(wkst, up->wk_st);
+		ret = true;
+	}
+
+	return ret;
+}
+
 static void omap_uart_wakeup_enable(struct platform_device *pdev, bool enable)
 {
 	struct omap_uart_port_info *up = pdev->dev.platform_data;
@@ -369,6 +391,7 @@ void __init omap_serial_init_port(struct omap_board_data *bdata,
 	pdata->uartclk = OMAP24XX_BASE_BAUD * 16;
 	pdata->flags = UPF_BOOT_AUTOCONF;
 	pdata->enable_wakeup = omap_uart_wakeup_enable;
+	pdata->chk_wakeup = omap_uart_chk_wakeup;
 	pdata->dma_enabled = info->dma_enabled;
 	pdata->dma_rx_buf_size = info->dma_rx_buf_size;
 	pdata->dma_rx_poll_rate = info->dma_rx_poll_rate;
