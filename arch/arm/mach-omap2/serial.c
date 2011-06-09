@@ -245,7 +245,9 @@ static void omap_uart_wakeup_enable(struct platform_device *pdev, bool enable)
 static void omap_uart_idle_init(struct omap_uart_port_info *uart,
 				unsigned short num)
 {
-	if (cpu_is_omap34xx()) {
+	if (cpu_is_omap44xx()) {
+		uart->has_async_wake = true;
+	} else if (cpu_is_omap34xx()) {
 		u32 mod = num > 1 ? OMAP3430_PER_MOD : CORE_MOD;
 		u32 wk_mask = 0;
 

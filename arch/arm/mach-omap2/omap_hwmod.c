@@ -1788,7 +1788,7 @@ static int omap_hwmod_set_ioring_wakeup(struct omap_hwmod *oh, bool set_wake)
 	struct omap_device_pad *pad;
 	int ret = -EINVAL, j;
 
-	if (oh->mux->enabled) {
+	if ((oh) && (oh->mux) && (oh->mux->enabled)) {
 		for (j = 0; j < oh->mux->nr_pads_dynamic; j++) {
 			pad = oh->mux->pads_dynamic[j];
 			if (pad->flags & OMAP_DEVICE_PAD_WAKEUP) {

@@ -792,8 +792,11 @@ static struct omap_device_pad serial3_pads[] __initdata = {
 			 OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0),
 	OMAP_MUX_STATIC("uart3_rts_sd.uart3_rts_sd",
 			 OMAP_PIN_OUTPUT | OMAP_MUX_MODE0),
-	OMAP_MUX_STATIC("uart3_rx_irrx.uart3_rx_irrx",
-			 OMAP_PIN_INPUT | OMAP_MUX_MODE0),
+	{
+		.name = "uart3_rx_irrx.uart3_rx_irrx",
+		.enable = OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+		.flags = OMAP_DEVICE_PAD_REMUX | OMAP_DEVICE_PAD_WAKEUP,
+	},
 	OMAP_MUX_STATIC("uart3_tx_irtx.uart3_tx_irtx",
 			 OMAP_PIN_OUTPUT | OMAP_MUX_MODE0),
 };
